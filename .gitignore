@@ -1,0 +1,6 @@
+.cache/*
+build
+dist/*
+!subprojects/*.wrap
+!subprojects/packagefiles/
+subprojects/*
