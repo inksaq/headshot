@@ -1,9 +1,18 @@
 #include "core/core.h"
+#include "fmt/core.h"
+#include "runtime/runtime.h"
+#include "menu_scene.h"
 #include "GLFW/glfw3.h"
+#include "runtime/starter.h"
 #include "thread"
+#include <iostream>
+
 
 core::graphics::Window window(1600, 900, "Atlas");
 core::Scene* current_scene;
+Runtime::Starter starter;
+
+
 
 void logic(){
 
@@ -14,13 +23,13 @@ void logic(){
         std::clock_t start = std::clock();
         double delta = (double)(start - end) / CLOCKS_PER_SEC;
         end = std::clock();
-
+        starter.postLoad();
         current_scene->update(delta);
     }
 }
 
 void client(){
-
+    starter.postLoad();
     while (window.is_open()){
         core::Event event;
 
@@ -40,19 +49,26 @@ void client(){
         }
 
         window.new_frame();
+        //std::cout << "drawing" << std::endl;
         current_scene->draw(window);
         window.render();
     }
 }
 
 int main(){
-    window.create_context();
+     window.create_opengl_context();
+    //window.create_context();
+    starter.init();
+     current_scene = new scenes::MainMenu(window);
+     current_scene->init();
 
+     std::thread logic_thread(logic);
+     starter.startup();
 
-    std::thread logic_thread(logic);
-
-    client();
-
-    logic_thread.join();
-    return 0;
+     client();
+         
+    
+     logic_thread.join();
+    starter.terminate();
+     return 0;
 }

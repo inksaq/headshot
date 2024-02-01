@@ -1,9 +1,16 @@
-inc = include_directories('.')
+subdir('runtime')
+inc = include_directories('.', 'runtime')
 
-sources = files(
-  'main.cpp'
+
+
+client_sources = files(
+  'main.cpp',
+  'menu_scene.cpp'
+
 
   )
+
+sources = runtime_sources + client_sources
 
 dependencies = [grunge_dep]
 
@@ -15,5 +22,7 @@ executable(
   sources: sources,
   include_directories: inc,
   dependencies: dependencies,
-  cpp_args: cpp_args
+  cpp_args: cpp_args,
+  install: true,
+  install_dir: meson.source_root() / 'game'
   )
